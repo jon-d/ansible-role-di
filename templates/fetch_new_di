@@ -1,0 +1,13 @@
+#!/bin/sh
+
+dist="wheezy"
+[ -n "$1" ] && dist="$1"
+
+TFTP_D="/srv/tftp/d-i/$dist"
+
+mkdir -p "$TFTP_D"
+cd "$TFTP_D"
+rm -f netboot.tar.gz
+wget "http://ftp.nl.debian.org/debian/dists/$dist/main/installer-amd64/current/images/netboot/netboot.tar.gz"
+tar xzf netboot.tar.gz
+

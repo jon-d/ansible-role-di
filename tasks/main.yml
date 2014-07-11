@@ -1,0 +1,79 @@
+- name: install required packages
+  apt: pkg={{ item }} state=installed
+  with_items:
+    - tftpd-hpa
+
+- name: create d-i preseed directory
+  file: state=directory path=/var/www/d-i
+
+- name: copy the preseed files
+  template: src={{ item }} dest=/var/www/d-i/{{ item }}
+  with_items:
+    - preseed.cfg
+    - preseed-bm.cfg
+
+- name: copy the authorized_keys files
+  copy: src=authorized_keys dest=/var/www/d-i/authorized_keys
+
+- name: install fetch_new_di script
+  template: src=fetch_new_di dest=/usr/local/sbin/fetch_new_di
+
+- name: make fetch_new_di executable
+  file: path=/usr/local/sbin/fetch_new_di mode=755
+
+- name: install create_pxelinux_config script
+  copy: src=create_pxelinux_config dest=/usr/local/sbin/create_pxelinux_config
+
+- name: make create_pxelinux_config script executable
+  file: path=/usr/local/sbin/create_pxelinux_config mode=755
+
+#######################################################
+## Download and install the debian-installer for network install
+##
+## To execute this part set the variable "fetch_new_debian-installer" to True
+## on the command line :
+##
+## ansible-playbook site.yml --extra-vars "fetch_new_debian-installer=True"
+
+- name: execute fetch_new_di
+  command: /usr/local/sbin/fetch_new_di
+  when: fetch_new_debian-installer
+
+- name: execute fetch_new_di sid
+  command: /usr/local/sbin/fetch_new_di sid
+  when: fetch_new_debian-installer
+
+- name: install automatic bootmenu for the virtual machines
+  template: src=syslinux-vm.cfg dest=/srv/tftp/d-i/{{ item }}/debian-installer/amd64/boot-screens/syslinux-vm.cfg
+  with_items:
+    - wheezy
+    - sid
+
+- name: fix automatic bootmenu permissions for the virtual machines
+  file: path=/srv/tftp/d-i/{{ item }}/debian-installer/amd64/boot-screens/syslinux-vm.cfg mode=664
+  with_items:
+    - wheezy
+    - sid
+
+- name: install automatic bootmenu for the physical machines (with IPMI)
+  template: src=syslinux-ipmi.cfg dest=/srv/tftp/d-i/{{ item }}/debian-installer/amd64/boot-screens/syslinux-ipmi.cfg
+  with_items:
+    - wheezy
+    - sid
+
+- name: fix automatic bootmenu permissions for the physical machines (with IPMI)
+  file: path=/srv/tftp/d-i/{{ item }}/debian-installer/amd64/boot-screens/syslinux-ipmi.cfg mode=664
+  with_items:
+    - wheezy
+    - sid
+
+- name: default boot on vm bootmenu
+  file: path=/srv/tftp/d-i/{{ item }}/debian-installer/amd64/pxelinux.cfg/default state=link src=../boot-screens/syslinux-vm.cfg force=yes
+  with_items:
+    - wheezy
+    - sid
+
+- name: create specific config files for pxelinux
+  command: /usr/local/sbin/create_pxelinux_config {{ hostvars[item]['eth0_mac'] }} syslinux-ipmi.cfg
+  with_items: groups['nodes']
+

@@ -1,0 +1,2 @@
+- name: install automatic bootmenu
+  copy: src=syslinux.cfg dest=/srv/tftp/d-i/debian-installer/amd64/boot-screens/syslinux.cfg

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+usage () {
+    echo "USAGE: $0 mac_address target
+"
+}
+
+[ -z "$1" ] || [ -z "$2" ] && { usage; exit 1; }
+
+mac_address="$1"
+target="$2"
+
+mac_address=`echo "$mac_address" | tr [:upper:]: [:lower:]-`
+
+for i in wheezy sid
+do
+    cd "/srv/tftp/d-i/$i/pxelinux.cfg"
+    rm -f "01-$mac_address"
+    ln -s "../boot-screens/$target" "01-$mac_address"
+done
+
