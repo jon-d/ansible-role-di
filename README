@@ -1,0 +1,16 @@
+ansible-role-di
+===============
+
+This ansible role describe debian-installer installation and
+configuration for automatic Debian network installation.
+
+It needs a dhcp server and an apt proxy.
+
+
+To download the debian-installer itself for the first time or to get it
+updated the variable "fetch_new_debian-installer" should be true.
+You can set variables on the command line with ``--extra-vars`` :
+
+    ansible-playbook site.yml --extra-vars "fetch_new_debian-installer=True"
+
+
