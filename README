@@ -4,8 +4,34 @@ ansible-role-di
 This ansible role describe debian-installer installation and
 configuration for automatic Debian network installation.
 
-It needs a dhcp server and an apt proxy.
+It needs a dhcp server a web server and an apt proxy.
 
+
+Configuration
+-------------
+
+You should take a look at the preseed files (to change at least the default
+language and keyboard) and if you are using a serial console the serial port
+number is set in the syslinux config files.
+
+The file ``files/authorized_keys`` is missing as it is local data. This file
+will be installed in ``/root/.ssh`` on the newly deployed machines.
+
+To adjust the configuration to the local needs the following variables are
+available :
+
+  - ``di_proxy``: local apt proxy address
+  - ``di_root_password_hash``: initial root password
+  - ``di_master``: the master server address on which can be found the pressed
+    files and the authorized_keys file (so with an http server and tftp and
+    dhcp server)
+
+and the machines to be deployed should have a ``eth0_mac`` variable in the
+inventory.
+
+
+Get the debian installer
+------------------------
 
 To download the debian-installer itself for the first time or to get it
 updated the variable "fetch_new_debian-installer" should be true.
