@@ -12,8 +12,8 @@
     - preseed.cfg
     - preseed-bm.cfg
 
-- name: copy the authorized_keys files
-  copy: src=authorized_keys dest=/var/www/d-i/authorized_keys
+- name: install authorized_keys file
+  template: src=authorized_keys dest=/var/www/d-i/authorized_keys
 
 - name: install fetch_new_di script
   template: src=fetch_new_di dest=/usr/local/sbin/fetch_new_di

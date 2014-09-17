@@ -1,0 +1,3 @@
+{% for k in di_authorized_keys %}
+{{ k }}
+{% endfor %}
