@@ -75,5 +75,5 @@
 
 - name: create specific config files for pxelinux
   command: /usr/local/sbin/create_pxelinux_config {{ hostvars[item]['eth0_mac'] }} syslinux-ipmi.cfg
-  with_items: groups['nodes']
+  with_items: groups['ganeti_nodes']
 
